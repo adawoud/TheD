@@ -49,4 +49,8 @@ class ProductDetailViewModel @Inject constructor(
             .let(disposables::add)
     }
 
+    fun onRetryButtonClicked(productId: Int) {
+        productDetail(productId)
+    }
+
 }

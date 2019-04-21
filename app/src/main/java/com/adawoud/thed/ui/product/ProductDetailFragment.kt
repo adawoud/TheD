@@ -24,6 +24,7 @@ class ProductDetailFragment : BaseFragment() {
     private lateinit var viewModel: ProductDetailViewModel
     private val args: ProductDetailFragmentArgs by navArgs()
     private val keyProductId = "keyProductId"
+    private var offlineSnackbar: Snackbar? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,6 +73,9 @@ class ProductDetailFragment : BaseFragment() {
 
     private fun renderSuccessState(product: ProductDetail) {
         stopLoading()
+        offlineSnackbar?.let { snackbar ->
+            if (snackbar.isShown) snackbar.dismiss()
+        }
         picasso.load(product.thumbnailUrl).into(ivThumbnail)
         tvTitle.text = product.name
         tvPrice.text = resources.getString(R.string.price, product.price)
@@ -80,11 +84,16 @@ class ProductDetailFragment : BaseFragment() {
 
     private fun renderOfflineState() {
         stopLoading()
-        Snackbar.make(
-            tvDescription,
-            getString(R.string.error_no_connection),
-            Snackbar.LENGTH_LONG
-        ).show()
+        offlineSnackbar = Snackbar
+            .make(
+                tvDescription,
+                getString(R.string.error_no_connection),
+                Snackbar.LENGTH_INDEFINITE
+            )
+            .setAction(getString(R.string.action_retry)) {
+                viewModel.onRetryButtonClicked(args.productId)
+            }
+        offlineSnackbar?.show()
     }
 
     private fun startLoading() {

@@ -24,6 +24,7 @@ class ProductsFragment : BaseFragment() {
     private lateinit var viewModel: ProductsViewModel
     private lateinit var productsAdapter: ProductsAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager
+    private var offlineSnackbar: Snackbar? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,16 +73,24 @@ class ProductsFragment : BaseFragment() {
 
     private fun renderSuccessState(products: List<Product>) {
         stopLoading()
+        offlineSnackbar?.let { snackbar ->
+            if (snackbar.isShown) snackbar.dismiss()
+        }
         productsAdapter.submitList(products)
     }
 
     private fun renderOfflineState() {
         stopLoading()
-        Snackbar.make(
-            rvProducts,
-            getString(R.string.error_no_connection),
-            Snackbar.LENGTH_LONG
-        ).show()
+        offlineSnackbar = Snackbar
+            .make(
+                rvProducts,
+                getString(R.string.error_no_connection),
+                Snackbar.LENGTH_INDEFINITE
+            )
+            .setAction(getString(R.string.action_retry)) {
+                viewModel.onRetryButtonClicked()
+            }
+        offlineSnackbar?.show()
     }
 
     private fun startLoading() {

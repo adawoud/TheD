@@ -12,13 +12,30 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class ProductsViewModel @Inject constructor(
-    schedulers: RxSchedulers,
-    repository: Repository
+    private val schedulers: RxSchedulers,
+    private val repository: Repository
 ) : BaseViewModel() {
     private val internalState = MutableLiveData<ProductsViewState>()
     val state: LiveData<ProductsViewState> = internalState
 
     init {
+        products()
+    }
+
+    fun onProductClicked(product: Product) {
+        navigate(
+            ProductsFragmentDirections.actionProductsFragmentToProductDetailFragment(
+                product.id,
+                product.title
+            )
+        )
+    }
+
+    fun onRetryButtonClicked() {
+        products()
+    }
+
+    private fun products() {
         repository.products()
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.main())
@@ -53,15 +70,6 @@ class ProductsViewModel @Inject constructor(
                 Timber.d(it)
             })
             .let(disposables::add)
-    }
-
-    fun onProductClicked(product: Product) {
-        navigate(
-            ProductsFragmentDirections.actionProductsFragmentToProductDetailFragment(
-                product.id,
-                product.title
-            )
-        )
     }
 
 }
