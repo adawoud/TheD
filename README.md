@@ -1,5 +1,5 @@
 # TheD
-This project a coding task I was handed. It's written entirely in Kotlin, supports offline browsing, and uses MVVM on the presentation layer.
+This project a coding task I was handed. It's written entirely in Kotlin, works offline, and uses MVVM on the presentation layer.
 
 The project uses the following libraries:
 
